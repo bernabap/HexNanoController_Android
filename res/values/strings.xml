@@ -17,6 +17,9 @@
     <string name="settings_item_connection_state_not_conneceted">Not connected</string>
     <string name="settings_item_connection_state_conneceted">Connected</string>
     
+    <string name="settings_item_pitch_trim">Pitch   </string>
+    <string name="settings_item_roll_trim">Roll   </string>
+    
     <string name="settings_item_left_handed">Left Handed</string>
     <string name="settings_item_interface_opacity">Interface Opacity</string>
     <string name="settings_item_acc_mode">Acc Mode</string>

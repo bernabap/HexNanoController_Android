@@ -1,5 +1,9 @@
 package com.hexairbot.hexmini;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -20,10 +24,21 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.hexairbot.hexmini.adapter.SettingsViewAdapter;
 import com.hexairbot.hexmini.ble.BleConnectionManager;
 import com.hexairbot.hexmini.ble.BleConnectionManagerDelegate;
@@ -31,14 +46,8 @@ import com.hexairbot.hexmini.modal.ApplicationSettings;
 import com.hexairbot.hexmini.modal.OSDCommon;
 import com.hexairbot.hexmini.modal.Transmitter;
 import com.hexairbot.hexmini.ui.control.ViewPagerIndicator;
-import com.hexairbot.hexmini.util.telemetry.CommandData;
 import com.hexairbot.hexmini.util.telemetry.ReceivedDataDecoder;
-import com.hexairbot.hexmini.util.telemetry.TelemetryDataListener;
 import com.hexairbot.hexmini.util.telemetry.TelemetryDataLogger;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public class SettingsViewController extends ViewController
   implements OnPageChangeListener, OnClickListener, BleConnectionManagerDelegate {
@@ -70,6 +79,11 @@ public class SettingsViewController extends ViewController
   private Button downTrimBtn;
   private Button leftTrimBtn;
   private Button rightTrimBtn;
+  
+  private TextView pitchTrimValueTextView;
+  private TextView rollTrimValueTextView;  
+  private int pitchTrim;
+  private int rollTrim;
 
   private CheckBox isLeftHandedCheckBox;
   private CheckBox isAccModeCheckBox;
@@ -267,6 +281,13 @@ public class SettingsViewController extends ViewController
     leftTrimBtn = (Button) settingsViews.get(angelTrimPageIdx).findViewById(R.id.leftTrimBtn);
     rightTrimBtn = (Button) settingsViews.get(angelTrimPageIdx).findViewById(R.id.rightTrimBtn);
 
+    pitchTrimValueTextView = (TextView) settingsViews.get(angelTrimPageIdx).findViewById(R.id.pitchTrimValueTextView);
+    rollTrimValueTextView = (TextView) settingsViews.get(angelTrimPageIdx).findViewById(R.id.rollTrimValueTextView);
+	
+    ApplicationSettings settings = HexMiniApplication.sharedApplication().getAppSettings();
+    safeSetText(pitchTrimValueTextView, Integer.toString(settings.getPitchTrim()));
+    safeSetText(rollTrimValueTextView, Integer.toString(settings.getRollTrim()));
+    
     scanBtn.setText(R.string.btn_title_scan);
 
     isLeftHandedCheckBox = (CheckBox) settingsViews.get(interfacePageIdx).findViewById(R.id.isLeftHandedCheckBox);
@@ -435,39 +456,59 @@ public class SettingsViewController extends ViewController
 
     upTrimBtn.setOnClickListener(new OnClickListener() {
 
-      @Override
-      public void onClick(View arg0) {
-        Log.d(TAG, "MSP_TRIM_UP");
-        Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_TRIM_UP);
-      }
-    });
+        @Override
+        public void onClick(View arg0) {
+          Log.d(TAG, "MSP_TRIM_UP");
+          Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_TRIM_UP);
+          ApplicationSettings settings = HexMiniApplication.sharedApplication().getAppSettings();       
+          pitchTrim = settings.getPitchTrim() + 1;
+          safeSetText(pitchTrimValueTextView, Integer.toString(pitchTrim));
+          settings.setPitchTrim(pitchTrim);
+          settings.save();
+        }
+      });
 
     downTrimBtn.setOnClickListener(new OnClickListener() {
 
-      @Override
-      public void onClick(View arg0) {
-        Log.d(TAG, "MSP_TRIM_DOWN");
-        Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_TRIM_DOWN);
-      }
-    });
+        @Override
+        public void onClick(View arg0) {
+          Log.d(TAG, "MSP_TRIM_DOWN");
+          Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_TRIM_DOWN);
+          ApplicationSettings settings = HexMiniApplication.sharedApplication().getAppSettings();    
+          pitchTrim = settings.getPitchTrim() - 1;
+          safeSetText(pitchTrimValueTextView, Integer.toString(pitchTrim));
+          settings.setPitchTrim(pitchTrim);
+          settings.save();
+        }
+      });
 
     leftTrimBtn.setOnClickListener(new OnClickListener() {
 
-      @Override
-      public void onClick(View arg0) {
-        Log.d(TAG, "MSP_TRIM_LEFT");
-        Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_TRIM_LEFT);
-      }
-    });
+        @Override
+        public void onClick(View arg0) {
+          Log.d(TAG, "MSP_TRIM_LEFT");
+          Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_TRIM_LEFT);
+          ApplicationSettings settings = HexMiniApplication.sharedApplication().getAppSettings();
+          rollTrim = settings.getRollTrim() - 1;
+          safeSetText(rollTrimValueTextView, Integer.toString(rollTrim));
+          settings.setRollTrim(rollTrim);
+          settings.save();
+        }
+      });
 
     rightTrimBtn.setOnClickListener(new OnClickListener() {
 
-      @Override
-      public void onClick(View arg0) {
-        Log.d(TAG, "MSP_TRIM_RIGHT");
-        Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_TRIM_RIGHT);
-      }
-    });
+        @Override
+        public void onClick(View arg0) {
+          Log.d(TAG, "MSP_TRIM_RIGHT");
+          Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_TRIM_RIGHT);
+          ApplicationSettings settings = HexMiniApplication.sharedApplication().getAppSettings(); 
+          rollTrim = settings.getRollTrim() + 1;
+          safeSetText(rollTrimValueTextView, Integer.toString(rollTrim));
+          settings.setRollTrim(rollTrim);
+          settings.save();
+        }
+      });
 
     magCalibrateBtn.setOnClickListener(new OnClickListener() {
 
@@ -825,6 +866,13 @@ public class SettingsViewController extends ViewController
 
     bleDeviceListView.setEnabled(false);
     scanBtn.setEnabled(false);
+    
+    ApplicationSettings settings = HexMiniApplication.sharedApplication().getAppSettings();
+    settings.setPitchTrim(0);
+    settings.setRollTrim(0);
+    settings.save();
+    safeSetText(pitchTrimValueTextView, "0");
+    safeSetText(rollTrimValueTextView, "0");
 
     Handler handler = new Handler();
 

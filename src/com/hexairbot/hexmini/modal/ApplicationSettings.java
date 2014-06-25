@@ -31,6 +31,8 @@ public class ApplicationSettings {
   private final static String RUDDER_DEAD_BAND = "RudderDeadBand";
   private final static String TAKE_OFF_THROTTLE = "TakeOffThrottle";
   public final static String CHANNELS = "Channels";
+  private final static String PITCH_TRIM = "PitchTrim";
+  private final static String ROLL_TRIM = "RollTrim";
 
   private String path;
 
@@ -49,6 +51,8 @@ public class ApplicationSettings {
   private float elevatorDeadBand;
   private float rudderDeadBand;
   private float takeOffThrottle;
+  private int pitchTrim;
+  private int rollTrim;
 
 
   private List<Channel> channels;
@@ -302,4 +306,22 @@ public class ApplicationSettings {
 
     return null;
   }
+  
+  public int getPitchTrim() {
+	    return pitchTrim;
+	}
+	
+	public void setPitchTrim(int pitchTrim) {
+		    this.pitchTrim = pitchTrim;
+		    data.put(PITCH_TRIM, pitchTrim);
+	}
+	
+	public int getRollTrim() {
+		    return rollTrim;
+	}
+	
+	public void setRollTrim(int rollTrim) {
+		    this.rollTrim = rollTrim;
+		    data.put(ROLL_TRIM, rollTrim);
+	}
 }

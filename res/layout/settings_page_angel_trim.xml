@@ -4,45 +4,81 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <ImageView
-        android:id="@+id/dummyImageView"
+   
+    <TextView
+        android:id="@+id/pitchTrim"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/trim_dummy_center" />
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="220dp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/settings_indicator_text_size"
+        android:text="@string/settings_item_pitch_trim" />
+
+    <TextView
+        android:id="@+id/rollTrim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pitchTrim" 
+        android:layout_marginLeft="229dp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/settings_indicator_text_size" 
+        android:layout_marginTop="@dimen/settings_v_gap" 
+        android:text="@string/settings_item_roll_trim" />
     
+    <TextView
+        android:id="@+id/pitchTrimValueTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/pitchTrim"
+        android:textColor="@color/orange"
+        android:textSize="@dimen/settings_indicator_text_size" />
+
+    <TextView
+        android:id="@+id/rollTrimValueTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pitchTrimValueTextView"
+        android:layout_marginTop="@dimen/settings_v_gap"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/rollTrim"
+        android:textColor="@color/orange"
+        android:textSize="@dimen/settings_indicator_text_size" />
+
+    <Button
+        android:id="@+id/leftTrimBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/upTrimBtn"
+        android:background="@drawable/btn_trim_left" />
+
     <Button
         android:id="@+id/upTrimBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/dummyImageView"
-        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/rightTrimBtn"
+        android:layout_alignLeft="@+id/downTrimBtn"
         android:background="@drawable/btn_trim_up" />
-    
-        <Button
-            android:id="@+id/downTrimBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/dummyImageView"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/btn_trim_down" />
 
-        <Button
-            android:id="@+id/rightTrimBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/upTrimBtn"
-            android:background="@drawable/btn_trim_right" />
+    <Button
+        android:id="@+id/rightTrimBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/leftTrimBtn"
+        android:layout_alignBottom="@+id/leftTrimBtn"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="52dp"
+        android:background="@drawable/btn_trim_right" />
 
-        <Button
-            android:id="@+id/leftTrimBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/upTrimBtn"
-            android:background="@drawable/btn_trim_left" />
+    <Button
+        android:id="@+id/downTrimBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rightTrimBtn"
+        android:layout_toLeftOf="@+id/rightTrimBtn"
+        android:background="@drawable/btn_trim_down" />
 
 </RelativeLayout>
