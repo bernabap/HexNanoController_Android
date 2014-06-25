@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+
 import com.hexairbot.hexmini.HexMiniApplication.AppStage;
 import com.hexairbot.hexmini.ble.BleConnectionManager;
 import com.hexairbot.hexmini.gestures.EnhancedGestureDetector;
@@ -73,10 +74,10 @@ public class HudViewController extends ViewController
   private Image bottomBarBg;
 
   private Button stopBtn;
-  private Button takeOffBtn;
   private Button settingsBtn;
   private Button stopWatchResetBtn;
   private ToggleButton altHoldToggleBtn;
+  private Button helpBtn;
 
   private Text stateTextView;
 
@@ -178,10 +179,7 @@ public class HudViewController extends ViewController
     middleBg.setSizeParams(SizeParams.REPEATED, SizeParams.REPEATED);  //Widthˮƽ������ȫ����height���ֲ���
     middleBg.setAlphaEnabled(true);
 
-    Image bottomLeftSkrew = new Image(res, R.drawable.screw, Align.BOTTOM_LEFT);
-    Image bottomRightSkrew = new Image(res, R.drawable.screw, Align.BOTTOM_RIGHT);
-
-    Image logo = new Image(res, R.drawable.logo, Align.BOTTOM_LEFT);
+    Image logo = new Image(res, R.drawable.logo, Align.BOTTOM_CENTER);
     logo.setMargin(0, 0, (int) res.getDimension(R.dimen.hud_logo_margin_bottom), (int) res.getDimension(R.dimen.hud_logo_margin_left));
 
     Image statusBar = new Image(res, R.drawable.status_bar, Align.TOP_LEFT);
@@ -203,12 +201,10 @@ public class HudViewController extends ViewController
     settingsBtn = new Button(res, R.drawable.btn_settings_normal, R.drawable.btn_settings_hl, Align.TOP_RIGHT);
     settingsBtn.setMargin((int) res.getDimension(R.dimen.hud_btn_settings_margin_top), (int) res.getDimension(R.dimen.hud_btn_settings_margin_right), 0, 0);
 
-    Button helpBtn = new Button(res, R.drawable.btn_help_normal, R.drawable.btn_help_hl, Align.TOP_RIGHT);
-    helpBtn.setMargin((int) res.getDimension(R.dimen.hud_btn_settings_margin_top), (int) res.getDimension(R.dimen.hud_btn_settings_margin_right) * 4, 0, 0);
+    helpBtn = new Button(res, R.drawable.btn_help_normal, R.drawable.btn_help_hl, Align.BOTTOM_RIGHT);
+    helpBtn.setMargin(0, (int) res.getDimension(R.dimen.hud_btn_help_margin_right), (int) res.getDimension(R.dimen.hud_btn_help_margin_bottom), 0);
 
-    takeOffBtn = new Button(res, R.drawable.btn_take_off_normal, R.drawable.btn_take_off_hl, Align.BOTTOM_CENTER);
-    takeOffBtn.setAlphaEnabled(true);
-    stopBtn = new Button(res, R.drawable.btn_stop_normal, R.drawable.btn_stop_hl, Align.TOP_CENTER);
+    stopBtn = new Button(res, R.drawable.btn_unlock_hl, R.drawable.btn_unlock_normal, Align.TOP_CENTER);
     stopBtn.setAlphaEnabled(true);
 
     String state = context.getResources().getString(R.string.settings_item_connection_state_not_conneceted);
@@ -237,23 +233,19 @@ public class HudViewController extends ViewController
     altHoldToggleBtn.setVisible(false);
     //altHoldToggleBtn.setAlphaEnabled(true);
 
-    buttons = new Button[6];
+    buttons = new Button[5];
     buttons[0] = settingsBtn;
-    buttons[1] = takeOffBtn;
-    buttons[2] = stopBtn;
-    buttons[3] = altHoldToggleBtn;
-    buttons[4] = helpBtn;
-    buttons[5] = stopWatchResetBtn;
+    buttons[1] = stopBtn;
+    buttons[2] = altHoldToggleBtn;
+    buttons[3] = helpBtn;
+    buttons[4] = stopWatchResetBtn;
 
     renderer.addSprite(MIDDLE_BG_ID, middleBg);
     renderer.addSprite(TOP_BAR_ID, topBarBg);
     renderer.addSprite(BOTTOM_BAR_ID, bottomBarBg);
-    renderer.addSprite(BOTTOM_LEFT_SCREW, bottomLeftSkrew);
-    renderer.addSprite(BOTTOM_RIGHT_SCREW, bottomRightSkrew);
     renderer.addSprite(LOGO, logo);
     renderer.addSprite(STATUS_BAR, statusBar);
     renderer.addSprite(BATTERY_INDICATOR_ID, batteryIndicator);
-    renderer.addSprite(TAKE_OFF_BTN_ID, takeOffBtn);
     renderer.addSprite(STOP_BTN_ID, stopBtn);
     renderer.addSprite(SETTINGS_BTN_ID, settingsBtn);
     renderer.addSprite(ALT_HOLD_TOGGLE_BTN, altHoldToggleBtn);
@@ -261,7 +253,7 @@ public class HudViewController extends ViewController
     renderer.addSprite(STOPWATCH_BAR, stopWatchBar);
     renderer.addSprite(STOPWATCH_TEXT_VIEW, stopWatchTextView);
     renderer.addSprite(STOPWATCH_RESET_BTN_ID, stopWatchResetBtn);
-    //renderer.addSprite(HELP_BTN, helpBtn);
+    renderer.addSprite(HELP_BTN, helpBtn);
 
     isAccMode = settings.isAccMode();
     deviceOrientationManager = new DeviceOrientationManager(new DeviceSensorManagerWrapper(this.context), this);
@@ -461,25 +453,35 @@ public class HudViewController extends ViewController
       }
     });
 
-    takeOffBtn.setOnClickListener(new OnClickListener() {
-
-      @Override
-      public void onClick(View arg0) {
-        throttleChannel.setValue(-1);
-        getRudderAndThrottleJoystick().setYValue(-1);
-        Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_ARM);
-        stopWatch.start();
-      }
-    });
-
     stopBtn.setOnClickListener(new OnClickListener() {
-
-      @Override
-      public void onClick(View arg0) {
-        Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_DISARM);
-        stopWatch.pause();
-      }
-    });
+    	
+        boolean lock = false;
+     
+        @Override
+        public void onClick(View arg0) {
+            if(lock == false){
+          	  	lock = true;
+                stopBtn.setImages(context.getResources(), R.drawable.btn_lock_normal, R.drawable.btn_stop_normal);
+                throttleChannel.setValue(-1);
+                getRudderAndThrottleJoystick().setYValue(-1);
+                Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_ARM);
+                stopWatch.start();  
+                settingsBtn.setEnabled(false);
+                helpBtn.setEnabled(false);
+                stopWatchResetBtn.setEnabled(false);             
+            }
+            else
+            {
+          	  	lock = false;
+                stopBtn.setImages(context.getResources(), R.drawable.btn_unlock_hl, R.drawable.btn_unlock_normal);
+                Transmitter.sharedTransmitter().transmitSimpleCommand(OSDCommon.MSPCommand.MSP_DISARM);
+                stopWatch.pause();
+                settingsBtn.setEnabled(true);
+                helpBtn.setEnabled(true);
+                stopWatchResetBtn.setEnabled(true);
+            }         
+        }
+      });    
 
 
     altHoldToggleBtn.setOnClickListener(new OnClickListener() {
