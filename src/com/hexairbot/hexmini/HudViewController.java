@@ -393,16 +393,21 @@ public class HudViewController extends ViewController
           return;
         }
 
-
         Log.e(TAG, "rudderThrottleListener onChanged x:" + x + "y:" + y);
 
+        if (settings.yawEnable()) {
+          rudderChannel.setValue(x);
+        }
+        else{
+          rudderChannel.setValue(0);
+        }
 
         if (settings.isBeginnerMode()) {
-          rudderChannel.setValue(x * BEGINNER_RUDDER_CHANNEL_RATIO);
+          //rudderChannel.setValue(x * BEGINNER_RUDDER_CHANNEL_RATIO);
           throttleChannel.setValue((BEGINNER_THROTTLE_CHANNEL_RATIO - 1) + y * BEGINNER_THROTTLE_CHANNEL_RATIO);
 
         } else {
-          rudderChannel.setValue(x);
+          //rudderChannel.setValue(x);
           throttleChannel.setValue(y);
         }
       }
@@ -896,7 +901,9 @@ public class HudViewController extends ViewController
         //battery_phone_text.setText(level + "%");
       }
     }
-
-    ;
   };
+  
+  @Override
+  public void yawEnableValueDidChange(boolean isYawEnable) {
+  }
 }
